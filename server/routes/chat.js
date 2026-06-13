@@ -12,10 +12,11 @@ If the user wants to launch a campaign, tell them you're processing it.`;
 
 router.post('/', async (req, res) => {
   try {
+    console.log('📨 Chat request received:', req.body);
     const { messages } = req.body;
 
     const response = await groq.chat.completions.create({
-      model: 'llama3-70b-8192',
+      model: 'llama-3.1-8b-instant',
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages
@@ -23,11 +24,14 @@ router.post('/', async (req, res) => {
       temperature: 0.7,
     });
 
+    console.log('✅ Groq response received');
     res.json({
       success: true,
       message: response.choices[0].message.content
     });
   } catch (err) {
+    console.error('❌ Chat error:', err.message);
+    console.error('Full error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
